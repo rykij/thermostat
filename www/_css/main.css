@@ -1,0 +1,7 @@
+.PanelStatus { padding:20px; }
+
+.PanelStatus .field { padding: 4px; margin:1px; background: #eee; }
+
+.PanelStatus .field label { display:inline-block; margin-left:5px; }
+
+.PanelStatus .field input { display:inline-block; }

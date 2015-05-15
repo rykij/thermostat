@@ -1,0 +1,110 @@
+<!-- /*Copy to linino folder: mnt/sd/arduino/www */ -->
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>Prototipo termostato</title>
+
+<script type="text/javascript" src="_libs/jquery-2.0.3.min.js"></script>
+<script type="text/javascript" src="_libs/knockout-3.0.0.js"></script>
+<script type="text/javascript">
+
+//polling
+(function getDeviceStatus() {
+   setTimeout(function() {
+              $.ajax({ 
+                  url: '/arduino/digital/5',
+                  dataType: 'json', 
+                  success: function(data) {
+                     if (data != undefined)
+                         parseResponse(data);
+                     getDeviceStatus();
+                  },
+                  complete: getDeviceStatus 
+              });
+    }, 3000);
+})();
+
+(function getTemperatureStatus() {
+   setTimeout(function() {
+              $.ajax({ 
+                  url: '/arduino/analog/0',
+                  dataType: 'json', 
+                  success: function(data) {
+                     if (data != undefined && ledStatus != 'Off' )
+                         $('#temperature').val(data);
+                     else
+                         $('#temperature').val('0');
+                     getTemperatureStatus();
+                 },
+                 complete: getTemperatureStatus 
+             });
+    }, 5000);
+})();
+
+parseResponse = function(data) {
+     //var ledStatus = (data.replace(/(\r\n|\n|\r)/gm,"").trim() === '0') ? 'Off' : 'On';
+     ledStatus = (parseInt(data) == 0) ? 'Off' : 'On';
+     $('#status').val(ledStatus);
+}
+
+turnOn = function(){
+ $.ajax({
+      datatype: 'json',
+      url: '/arduino/digital/4/1',
+      success: function(data){
+          alert(data);
+      }
+  });
+}
+
+turnOff = function(){
+ $.ajax({
+      datatype: 'json',
+      url: '/arduino/digital/4/0',
+      success: function(data){
+          alert(data);
+      }
+  });
+}
+
+</script>
+</head>
+
+<body>
+<fieldset class="panel" id=PanelStatus>
+  <legend>Panel Status</legend>
+
+  <div class="field">
+    <label for=status>Device Status:</label>   
+    <input id=status name=status type="text" style="width:20px"></input>
+  </div>
+
+  <div class="field">
+    <label for=temperature>Temperature:</label>
+    <input id=temperature name=temperature type="text" style="width:20px"></input>
+  </div>
+
+  <div class="field">
+    <label for=buttons>Led:</label>
+    <button id=btnOn name=btnOn style="width:30px" onclick="turnOn();">On</button>
+    <button id=btnOff name=btnOff style="width:30px" onclick="turnOff();">off</button>
+  </div>
+
+</fieldset>
+
+<footer>
+<p>Copyright &copy; 2015 DIY Prototypes.<small>All rights reserved. </small></p>
+</footer>
+
+</body>
+</html>
+
+<script type="text/javascript">
+$(document).ready(function() {
+
+});
+</script>
